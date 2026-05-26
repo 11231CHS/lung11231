@@ -25,12 +25,12 @@ st.markdown("""
 <style>
 
 /* 전체 배경 */
-.stApp {
-    background:
-        radial-gradient(circle at top right, rgba(20,184,166,0.10), transparent 25%),
-        radial-gradient(circle at bottom left, rgba(14,165,233,0.08), transparent 30%),
-        linear-gradient(135deg, #f8fafc 0%, #eef6ff 100%);
-}
+#.stApp {
+#    background:
+#        radial-gradient(circle at top right, rgba(20,184,166,0.10), transparent 25%),
+#        radial-gradient(circle at bottom left, rgba(14,165,233,0.08), transparent 30%),
+#        linear-gradient(135deg, #f8fafc 0%, #eef6ff 100%);
+#}
 
 /* 카드 */
 .card {
