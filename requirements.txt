@@ -4,4 +4,3 @@ joblib
 matplotlib
 scikit-learn
 plotly
-koreanize-matplotlib
