@@ -4,11 +4,29 @@ import joblib
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 import plotly.graph_objects as go
+import os
+import urllib.request
+
 # -----------------------------
-# 한글 폰트 설정
+# 한글 폰트 다운로드
 # -----------------------------
-plt.rcParams['font.family'] = 'NanumGothic'
+font_path = "NanumGothic.ttf"
+
+if not os.path.exists(font_path):
+    urllib.request.urlretrieve(
+        "https://github.com/google/fonts/raw/main/ofl/nanumgothic/NanumGothic-Regular.ttf",
+        font_path
+    )
+
+# 폰트 등록
+fm.fontManager.addfont(font_path)
+font_name = fm.FontProperties(fname=font_path).get_name()
+
+plt.rcParams['font.family'] = font_name
 plt.rcParams['axes.unicode_minus'] = False
+
+
+
 # -----------------------------
 # 페이지 설정
 # -----------------------------
