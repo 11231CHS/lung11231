@@ -2,13 +2,8 @@ import streamlit as st
 import pandas as pd
 import joblib
 import matplotlib.pyplot as plt
+import koreanize_matplotlib
 import plotly.graph_objects as go
-
-# -----------------------------
-# 폰트 설정 (온라인 호환)
-# -----------------------------
-plt.rcParams['font.family'] = 'DejaVu Sans'
-plt.rcParams['axes.unicode_minus'] = False
 
 # -----------------------------
 # 페이지 설정
@@ -280,4 +275,3 @@ st.write(f"🍺 음주 정도 : {alc}")
 st.write(f"🧓 나이 : {age}")
 
 st.markdown('</div>', unsafe_allow_html=True)
-
