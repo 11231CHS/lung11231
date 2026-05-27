@@ -2,11 +2,12 @@ import streamlit as st
 import pandas as pd
 import joblib
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 
 # -----------------------------
-# 한글 폰트
+# 폰트 설정 (온라인 호환)
 # -----------------------------
-plt.rcParams['font.family'] = 'Malgun Gothic'
+plt.rcParams['font.family'] = 'DejaVu Sans'
 plt.rcParams['axes.unicode_minus'] = False
 
 # -----------------------------
@@ -23,14 +24,6 @@ st.set_page_config(
 # -----------------------------
 st.markdown("""
 <style>
-
-/* 전체 배경 */
-#.stApp {
-#    background:
-#        radial-gradient(circle at top right, rgba(20,184,166,0.10), transparent 25%),
-#        radial-gradient(circle at bottom left, rgba(14,165,233,0.08), transparent 30%),
-#        linear-gradient(135deg, #f8fafc 0%, #eef6ff 100%);
-#}
 
 /* 카드 */
 .card {
@@ -73,6 +66,12 @@ model = joblib.load("lung_model.pkl")
 scaler = joblib.load("lung_scaler.pkl")
 df = pd.read_csv("lung.csv")
 
+# cluster 컬럼 없으면 자동 생성
+if 'cluster' not in df.columns:
+    df['cluster'] = model.predict(
+        scaler.transform(df[['흡연', '알코올', '나이']])
+    )
+
 # -----------------------------
 # 제목
 # -----------------------------
@@ -101,6 +100,19 @@ new_patient = pd.DataFrame(
 # -----------------------------
 scaled = scaler.transform(new_patient)
 pred_cluster = model.predict(scaled)[0]
+
+# -----------------------------
+# 위험도 계산
+# -----------------------------
+risk_percent = {
+    0: 10,
+    1: 45,
+    2: 25,
+    3: 85
+}
+
+risk = risk_percent[pred_cluster]
+health_score = 100 - risk
 
 # -----------------------------
 # 군집 정보
@@ -147,6 +159,46 @@ with st.container():
     st.markdown('</div>', unsafe_allow_html=True)
 
 # -----------------------------
+# 건강도 게이지
+# -----------------------------
+st.subheader("💚 건강도 분석")
+
+g1, g2 = st.columns(2)
+
+with g1:
+
+    fig_gauge = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=health_score,
+        title={'text': "건강 점수"},
+        gauge={
+            'axis': {'range': [0, 100]},
+            'bar': {'color': "green"},
+            'steps': [
+                {'range': [0, 40], 'color': "#ffcccc"},
+                {'range': [40, 70], 'color': "#fff3cd"},
+                {'range': [70, 100], 'color': "#d4edda"}
+            ]
+        }
+    ))
+
+    fig_gauge.update_layout(height=320)
+
+    st.plotly_chart(fig_gauge, use_container_width=True)
+
+with g2:
+
+    st.metric("⚠️ 폐 건강 위험도", f"{risk}%")
+    st.metric("💪 건강 점수", f"{health_score}점")
+
+    if risk < 30:
+        st.success("위험도가 낮은 상태입니다.")
+    elif risk < 70:
+        st.warning("생활 습관 관리가 필요합니다.")
+    else:
+        st.error("고위험 상태입니다. 검진 권장.")
+
+# -----------------------------
 # 그래프 + 특징
 # -----------------------------
 col1, col2 = st.columns([1.1, 1])
@@ -155,7 +207,7 @@ with col1:
 
     st.subheader("📈 군집 시각화")
 
-    fig, ax = plt.subplots(figsize=(4.5,3.5))
+    fig, ax = plt.subplots(figsize=(5,4))
 
     ax.scatter(
         df['흡연'],
@@ -228,3 +280,4 @@ st.write(f"🍺 음주 정도 : {alc}")
 st.write(f"🧓 나이 : {age}")
 
 st.markdown('</div>', unsafe_allow_html=True)
+
