@@ -1,6 +1,7 @@
 streamlit
 pandas
 joblib
-scikit-learn
 matplotlib
+scikit-learn
+plotly
 koreanize-matplotlib
